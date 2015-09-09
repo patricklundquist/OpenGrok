@@ -53,6 +53,7 @@ import org.opensolaris.opengrok.analysis.executables.ELFAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.executables.JarAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.executables.JavaClassAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.fortran.FortranAnalyzerFactory;
+import org.opensolaris.opengrok.analysis.golang.GolangAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.java.JavaAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.javascript.JavaScriptAnalyzerFactory;
 import org.opensolaris.opengrok.analysis.lisp.LispAnalyzerFactory;
@@ -117,7 +118,7 @@ public class AnalyzerGuru {
     /** List of all registered {@code FileAnalyzerFactory} instances. */
     private static final List<FileAnalyzerFactory>
         factories = new ArrayList<>();
-        
+
     public static final Reader dummyR = new StringReader("");
     public static final String dummyS = "";
     public static final FieldType string_ft_stored_nanalyzed_norms = new FieldType(StringField.TYPE_STORED);
@@ -157,16 +158,17 @@ public class AnalyzerGuru {
             new ScalaAnalyzerFactory(),
             new SQLAnalyzerFactory(),
             new PLSQLAnalyzerFactory(),
-            new FortranAnalyzerFactory()
+            new FortranAnalyzerFactory(),
+            new GolangAnalyzerFactory()
         };
 
         for (FileAnalyzerFactory analyzer : analyzers) {
             registerAnalyzer(analyzer);
         }
-        
+
         string_ft_stored_nanalyzed_norms.setOmitNorms(false);
         string_ft_nstored_nanalyzed_norms.setOmitNorms(false);
-        
+
     }
 
     public List<FileAnalyzerFactory> getAnalyzerFactories() {
@@ -260,7 +262,7 @@ public class AnalyzerGuru {
         }
         return factory.getAnalyzer();
     }
-        
+
     /**
      * Populate a Lucene document with the required fields.
      * @param doc The document to populate
@@ -288,7 +290,7 @@ public class AnalyzerGuru {
             }
         } catch (HistoryException e) {
             OpenGrokLogger.getLogger().log(Level.WARNING, "An error occurred while reading history: ", e);
-        }    
+        }
         doc.add(new Field(QueryBuilder.DATE, date, string_ft_stored_nanalyzed_norms));
         if (path != null) {
             doc.add(new TextField(QueryBuilder.PATH, path, Store.YES));
@@ -303,9 +305,9 @@ public class AnalyzerGuru {
             if (g == Genre.PLAIN || g == Genre.XREFABLE || g == Genre.HTML) {
                 doc.add(new Field(QueryBuilder.T, g.typeName(), string_ft_stored_nanalyzed_norms
                     ));
-            }                   
+            }
             fa.analyze(doc, StreamSource.fromFile(file), xrefOut);
-            
+
             String type = fa.getFileTypeName();
             doc.add(new StringField(QueryBuilder.TYPE, type, Store.YES));
         }

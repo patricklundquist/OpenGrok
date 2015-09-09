@@ -134,7 +134,7 @@ public class SearchHelper {
      * the searcher used to open/search the index. Automatically set via
      * {@link #prepareExec(SortedSet)}.
      */
-    public IndexSearcher searcher;    
+    public IndexSearcher searcher;
     /**
      * list of docs which result from the executing the query
      */
@@ -156,7 +156,7 @@ public class SearchHelper {
     /**
      * the spellchecker object
      */
-    protected DirectSpellChecker checker;    
+    protected DirectSpellChecker checker;
     /**
      * projects to use to setup indexer searchers. Usually setup via
      * {@link #prepareExec(SortedSet)}.
@@ -189,7 +189,7 @@ public class SearchHelper {
 
     static {
         fileTypeDescription = new TreeMap<>();
-        
+
         fileTypeDescription.put("xml", "XML");
         fileTypeDescription.put("troff", "Troff");
         fileTypeDescription.put("elf", "ELF");
@@ -203,6 +203,7 @@ public class SearchHelper {
         fileTypeDescription.put("java", "Java");
         fileTypeDescription.put("javascript", "JavaScript");
         fileTypeDescription.put("python", "Python");
+        fileTypeDescription.put("golang", "Golang");
         fileTypeDescription.put("perl", "Perl");
         fileTypeDescription.put("php", "PHP");
         fileTypeDescription.put("lisp", "Lisp");
@@ -212,7 +213,7 @@ public class SearchHelper {
         fileTypeDescription.put("plsql", "PL/SQL");
         fileTypeDescription.put("fortran", "Fortran");
     }
-    
+
     /**
      * Returns a set of file type descriptions to be used for a
      * search form.
@@ -221,7 +222,7 @@ public class SearchHelper {
     public static Set<Map.Entry<String, String>> getFileTypeDescirptions() {
         return fileTypeDescription.entrySet();
     }
-        
+
     File indexDir;
     /**
      * Create the searcher to use wrt. to currently set parameters and the given
@@ -252,7 +253,7 @@ public class SearchHelper {
                 errorMsg = "No project selected!";
                 return this;
             }
-            this.projects = projects;            
+            this.projects = projects;
             if (projects.isEmpty()) {
                 //no project setup
                 FSDirectory dir = FSDirectory.open(indexDir);
@@ -263,7 +264,7 @@ public class SearchHelper {
                         FSDirectory.open(new File(indexDir, projects.first()));
                 searcher = new IndexSearcher(DirectoryReader.open(dir));
             } else {
-                //more projects                                
+                //more projects
                 IndexReader[] subreaders = new IndexReader[projects.size()];
                 int ii = 0;
                 //TODO might need to rewrite to Project instead of
@@ -378,8 +379,8 @@ public class SearchHelper {
         for (int j = 0; j < toks.length; j++) {
          //TODO below seems to be case insensitive ... for refs/defs this is bad
 	    SuggestWord[] words=checker.suggestSimilar(
-		    new Term(term.field(),toks[j]), SPELLCHECK_SUGGEST_WORD_COUNT, ir, 
-		    SuggestMode.SUGGEST_ALWAYS);	    
+		    new Term(term.field(),toks[j]), SPELLCHECK_SUGGEST_WORD_COUNT, ir,
+		    SuggestMode.SUGGEST_ALWAYS);
 	    for (SuggestWord w: words) {
               result.add(w.string);
 	    }
@@ -407,7 +408,7 @@ public class SearchHelper {
 		name=new String[]{projects.first()};
         } else {
             name = new String[projects.size()];
-            int ii = 0;            
+            int ii = 0;
             for (String proj : projects) {
                 name[ii++] = proj;
             }
@@ -418,11 +419,11 @@ public class SearchHelper {
 	IndexReader ir=null;
 	Term t;
 	for (int idx = 0; idx < name.length; idx++) {
-            Suggestion s = new Suggestion(name[idx]);	    
+            Suggestion s = new Suggestion(name[idx]);
             try {
-	        dir = FSDirectory.open(new File(indexDir, name[idx]));	    
+	        dir = FSDirectory.open(new File(indexDir, name[idx]));
 		ir = DirectoryReader.open(dir);
-		if (builder.getFreetext()!=null && 
+		if (builder.getFreetext()!=null &&
 			!builder.getFreetext().isEmpty()) {
 		t=new Term(QueryBuilder.FULL,builder.getFreetext());
                 getSuggestion(t, ir, dummy);
@@ -442,8 +443,8 @@ public class SearchHelper {
                 dummy.clear();
 		}
 		//TODO suggest also for path and history?
-                if ((s.freetext!=null && s.freetext.length > 0) || 
-			(s.defs!=null && s.defs.length > 0) || 
+                if ((s.freetext!=null && s.freetext.length > 0) ||
+			(s.defs!=null && s.defs.length > 0) ||
 			(s.refs!=null && s.refs.length > 0) ) {
                     res.add(s);
                 }
@@ -459,8 +460,8 @@ public class SearchHelper {
 					+ "getting spelling suggestions: ", ex);
 			}
                }
-	    }	
-	}    
+	    }
+	}
         return res;
     }
 

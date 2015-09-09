@@ -106,6 +106,12 @@ public class Ctags {
             command.add("--regex-scala=/^[ \t]*((abstract|final|sealed|implicit|lazy)[ \t]*)*var[ \t]+([a-zA-Z0-9_]+)/\3/l,variables/");
             command.add("--regex-scala=/^[ \t]*package[ \t]+([a-zA-Z0-9_.]+)/\1/p,packages/");
 
+            command.add("--langdef=golang");
+            command.add("--langmap=golang:.go");
+            command.add("--regex-golang=/func([ \t]+([^)]+))?[ \t]+([a-zA-Z0-9_]+)/\2/f,func/");
+            command.add("--regex-golang=/var[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/v,var/");
+            command.add("--regex-golang=/type[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/t,type/");
+
             /* Add extra command line options for ctags. */
             if (CTagsExtraOptionsFile != null) {
                 log.log(Level.INFO, "Adding extra options to ctags");
